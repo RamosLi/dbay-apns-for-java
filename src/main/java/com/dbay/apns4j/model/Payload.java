@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -31,6 +32,12 @@ public class Payload {
 	private String alert;
 	private Integer badge;
 	private String sound = "";
+	
+	private String alertBody;
+	private String alertActionLocKey;
+	private String alertLocKey;
+	private String[] alertLocArgs;
+	private String alertLaunchImage;
 	
 	public Map<String, Object> getParams() {
 		return params;
@@ -74,13 +81,29 @@ public class Payload {
 		JSONObject apsObj = new JSONObject();
 		if (getAlert() != null) {
 			apsObj.put("alert", getAlert());
+		} else {
+			if (getAlertBody() != null || getAlertLocKey() != null) {
+				JSONObject alertObj = new JSONObject();
+				putIntoJson("body", getAlertBody(), alertObj);
+				putIntoJson("action-loc-key", getAlertActionLocKey(), alertObj);
+				putIntoJson("loc-key", getAlertLocKey(), alertObj);
+				putIntoJson("launch-image", getAlertLaunchImage(), alertObj);
+				if (getAlertLocArgs() != null) {
+					JSONArray array = new JSONArray();
+					for (String str : getAlertLocArgs()) {
+						array.add(str);
+					}
+					alertObj.put("loc-args", array);
+				}
+				apsObj.put("alert", alertObj);
+			}
 		}
+		
 		if (getBadge() != null) {
 			apsObj.put("badge", getBadge().intValue());
 		}
-		if (getSound() != null) {
-			apsObj.put("sound", getSound());
-		}
+		putIntoJson("sound", getSound(), apsObj);
+		
 		object.put(APS, apsObj);
 		if (getParams() != null) {
 			for (Entry<String, Object> e : getParams().entrySet()) {
@@ -88,6 +111,12 @@ public class Payload {
 			}
 		}
 		return object.toString();
+	}
+	@SuppressWarnings("unchecked")
+	private void putIntoJson(String key, String value, JSONObject obj) {
+		if (value != null) {
+			obj.put(key, value);
+		}
 	}
 	public static void main(String[] args) {
 		Payload payload = new Payload();
@@ -97,5 +126,35 @@ public class Payload {
 		payload.addParam("para1", "1231dfasfwer");
 		payload.addParam("number", 12312312312L);
 		System.out.println(payload.toString());
+	}
+	public String getAlertBody() {
+		return alertBody;
+	}
+	public void setAlertBody(String alertBody) {
+		this.alertBody = alertBody;
+	}
+	public String getAlertActionLocKey() {
+		return alertActionLocKey;
+	}
+	public void setAlertActionLocKey(String alertActionLocKey) {
+		this.alertActionLocKey = alertActionLocKey;
+	}
+	public String getAlertLocKey() {
+		return alertLocKey;
+	}
+	public void setAlertLocKey(String alertLocKey) {
+		this.alertLocKey = alertLocKey;
+	}
+	public String getAlertLaunchImage() {
+		return alertLaunchImage;
+	}
+	public void setAlertLaunchImage(String alertLaunchImage) {
+		this.alertLaunchImage = alertLaunchImage;
+	}
+	public String[] getAlertLocArgs() {
+		return alertLocArgs;
+	}
+	public void setAlertLocArgs(String[] alertLocArgs) {
+		this.alertLocArgs = alertLocArgs;
 	}
 }

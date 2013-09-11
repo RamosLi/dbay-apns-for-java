@@ -29,18 +29,29 @@ public class Apns4jDemo {
 		return apnsService;
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		IApnsService service = getApnsService();
 		
 		// send notification
 		String token = "94c4764e4645f42a7b2052692c8b5b41f9d5c925876e11fec5721e9045ee4e5b";
+		
 		Payload payload = new Payload();
 		payload.setAlert("How are you?");
+		// If this property is absent, the badge is not changed. To remove the badge, set the value of this property to 0
 		payload.setBadge(1);
+		// set sound null, the music won't be played
+//		payload.setSound(null);
 		payload.setSound("msg.mp3");
 		payload.addParam("uid", 123456);
 		payload.addParam("type", 12);
 		service.sendNotification(token, payload);
+		
+		// payload, use loc string
+		Payload payload2 = new Payload();
+		payload2.setBadge(1);
+		payload2.setAlertLocKey("GAME_PLAY_REQUEST_FORMAT");
+		payload2.setAlertLocArgs(new String[]{"Jenna", "Frank"});
+		service.sendNotification(token, payload2);
 		
 		// get feedback
 		List<Feedback> list = service.getFeedbacks();
@@ -50,9 +61,16 @@ public class Apns4jDemo {
 			}
 		}
 		
+		try {
+			// sleep 5s.
+			Thread.sleep(5000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		// It's a good habit to shutdown what you never use
 		service.shutdown();
 		
-		System.exit(0);
+//		System.exit(0);
 	}
 }
