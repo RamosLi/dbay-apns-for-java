@@ -1,3 +1,5 @@
+Version 1.2
+ * Add an important configuration: socket.setSoTimeout.
 Version 1.1
  * Upgrade payload, alert supports dictionary value
 Version 1.0

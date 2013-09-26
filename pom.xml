@@ -4,7 +4,7 @@
     <groupId>com.dbay.apns4j</groupId>
     <artifactId>dbay-apns4j</artifactId>
     <packaging>jar</packaging>
-    <version>1.1</version>
+    <version>1.2</version>
     
     <name>Java APNS Lib</name>
     <description>High performance Java client for Apple's Push Notification Service (APNS)</description>

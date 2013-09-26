@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -76,6 +77,8 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	private int maxRetries;
 	private int maxCacheLength;
 	
+	private int readTimeOut = 5000; // ms
+	
 	private String host;
 	private int port;
 	
@@ -90,6 +93,8 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	private String connName;
 	private int intervalTime;
 	private long lastSuccessfulTime = 0;
+	
+	private AtomicInteger notificaionSentCount = new AtomicInteger(0);
 	
 	private Object lock = new Object();
 	
@@ -166,7 +171,9 @@ public class ApnsConnectionImpl implements IApnsConnection {
 				logger.error(String.format("%s Notification send failed. %s", connName, notification));
 				return;
 			} else {
-				logger.info(String.format("%s Send success: %s", connName, notification));
+				logger.info(String.format("%s Send success. count: %s, notificaion: %s", connName, 
+						notificaionSentCount.incrementAndGet(), notification));
+				
 				notificationCachedQueue.add(notification);
 				lastSuccessfulTime = System.currentTimeMillis();
 				
@@ -199,6 +206,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 		isFirstWrite = true;
 		errorHappendedLastConn = false;
 		Socket socket = factory.createSocket(host, port);
+		socket.setSoTimeout(readTimeOut);
 		// enable tcp_nodelay, any data will be sent immediately.
 		socket.setTcpNoDelay(true);
 		
@@ -238,52 +246,62 @@ public class ApnsConnectionImpl implements IApnsConnection {
 					InputStream socketIs = curSocket.getInputStream();
 					byte[] res = new byte[ERROR_RESPONSE_BYTES_LENGTH];
 					int size = -1;
-					while ((size = socketIs.read(res)) > 0) {
-						int command = res[0];
-						/** EN: error-response,close the socket and resent notifications
-						 *  CN: 一旦遇到错误返回就关闭连接，并且重新发送在它之后发送的通知
-						 */			
-						if (size == res.length && command == Command.ERROR) {
-							int status = res[1];
-							int errorId = ApnsTools.parse4ByteInt(res[2], res[3], res[4], res[5]);
-							
-							if (logger.isInfoEnabled()) {
-								logger.info(String.format("%s Received error response. status: %s, id: %s, error-desc: %s", connName, status, errorId, ErrorResponse.desc(status)));
+					
+					while (true) {
+						try {
+							size = socketIs.read(res);
+							if (size > 0) {
+								// break, only when something was read
+								break;
 							}
-							
-							Queue<PushNotification> resentQueue = new LinkedList<PushNotification>();
+						} catch (SocketTimeoutException e) {
+							// There is no data. Keep reading.
+						}
+					}
+					
+					int command = res[0];
+					/** EN: error-response,close the socket and resent notifications
+					 *  CN: 一旦遇到错误返回就关闭连接，并且重新发送在它之后发送的通知
+					 */			
+					if (size == res.length && command == Command.ERROR) {
+						int status = res[1];
+						int errorId = ApnsTools.parse4ByteInt(res[2], res[3], res[4], res[5]);
+						
+						if (logger.isInfoEnabled()) {
+							logger.info(String.format("%s Received error response. status: %s, id: %s, error-desc: %s", connName, status, errorId, ErrorResponse.desc(status)));
+						}
+						
+						Queue<PushNotification> resentQueue = new LinkedList<PushNotification>();
 
-							synchronized (lock) {
-								boolean found = false;
-								errorHappendedLastConn = true;
-								while (!notificationCachedQueue.isEmpty()) {
-									PushNotification pn = notificationCachedQueue.poll();
-									if (pn.getId() == errorId) {
-										found = true;
-									} else {
-										/**
-										 * https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html
-										 * As the document said, add the notifications which need be resent to the queue.
-										 * Igonre the error one
-										 */
-										if (found) {
-											resentQueue.add(pn);
-										}
+						synchronized (lock) {
+							boolean found = false;
+							errorHappendedLastConn = true;
+							while (!notificationCachedQueue.isEmpty()) {
+								PushNotification pn = notificationCachedQueue.poll();
+								if (pn.getId() == errorId) {
+									found = true;
+								} else {
+									/**
+									 * https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html
+									 * As the document said, add the notifications which need be resent to the queue.
+									 * Igonre the error one
+									 */
+									if (found) {
+										resentQueue.add(pn);
 									}
 								}
-								if (!found) {
-									logger.warn(connName + " Didn't find error-notification in the queue. Maybe it's time to adjust cache length. id: " + errorId);
-								}
 							}
-							// resend notifications
-							if (!resentQueue.isEmpty()) {
-								ApnsResender.getInstance().resend(name, resentQueue);
+							if (!found) {
+								logger.warn(connName + " Didn't find error-notification in the queue. Maybe it's time to adjust cache length. id: " + errorId);
 							}
-							break;
-						} else {
-							// ignore and continue reading
-							logger.error(connName + " Unexpected command or size. commend: " + command + " , size: " + size);
 						}
+						// resend notifications
+						if (!resentQueue.isEmpty()) {
+							ApnsResender.getInstance().resend(name, resentQueue);
+						}
+					} else {
+						// ignore and continue reading
+						logger.error(connName + " Unexpected command or size. commend: " + command + " , size: " + size);
 					}
 				} catch (Exception e) {
 					logger.error(connName + " " + e.getMessage(), e);
