@@ -77,7 +77,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	private int maxRetries;
 	private int maxCacheLength;
 	
-	private int readTimeOut = 5000; // ms
+	private int readTimeOut;
 	
 	private String host;
 	private int port;
@@ -99,7 +99,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	private Object lock = new Object();
 	
 	public ApnsConnectionImpl(SocketFactory factory, String host, int port, int maxRetries, 
-			int maxCacheLength, String name, String connName, int intervalTime) {
+			int maxCacheLength, String name, String connName, int intervalTime, int timeout) {
 		this.factory = factory;
 		this.host = host;
 		this.port = port;
@@ -108,6 +108,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 		this.name = name;
 		this.connName = connName;
 		this.intervalTime = intervalTime;
+		this.readTimeOut = timeout;
 	}
 	
 	@Override
@@ -151,10 +152,16 @@ public class ApnsConnectionImpl implements IApnsConnection {
 			int retries = 0;
 			while (retries < maxRetries) {
 				try {
-					if (socket == null || socket.isClosed() || 
-							(lastSuccessfulTime > 0 && (System.currentTimeMillis() - lastSuccessfulTime) > intervalTime)) {
+					boolean exceedIntervalTime = lastSuccessfulTime > 0 && (System.currentTimeMillis() - lastSuccessfulTime) > intervalTime;
+					if (exceedIntervalTime) {
+						closeSocket(socket);
+						socket = null;
+					}
+					
+					if (socket == null || socket.isClosed()) {
 						socket = createNewSocket();
 					}
+					
 					OutputStream socketOs = socket.getOutputStream();
 					socketOs.write(data);
 					socketOs.flush();

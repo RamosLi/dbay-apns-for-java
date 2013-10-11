@@ -52,7 +52,7 @@ public class ApnsConnectionPool implements Closeable {
 		for (int i = 0; i < poolSize; i++) {
 			String connName = (config.isDevEnv() ? "dev-" : "pro-") + CONN_ID_SEQ++;
 			IApnsConnection conn = new ApnsConnectionImpl(this.factory, host, port, config.getRetries(), 
-					config.getCacheLength(), config.getName(), connName, config.getIntervalTime());
+					config.getCacheLength(), config.getName(), connName, config.getIntervalTime(), config.getTimeout());
 			connQueue.add(conn);
 		}
 	}

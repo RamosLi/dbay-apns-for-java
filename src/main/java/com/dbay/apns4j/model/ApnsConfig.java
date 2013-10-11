@@ -59,6 +59,9 @@ public class ApnsConfig {
 	 */
 	private int intervalTime = 30 * 60 * 1000; // 30 minutes
 	
+	// socket read timeout
+	private int timeout = 10 * 1000; // 10 seconds
+	
 	public InputStream getKeyStore() {
 		return keyStore;
 	}
@@ -124,5 +127,13 @@ public class ApnsConfig {
 
 	public void setIntervalTime(int intervalTime) {
 		this.intervalTime = intervalTime;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 }
