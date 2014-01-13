@@ -15,13 +15,28 @@
  */
 package com.dbay.apns4j.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.dbay.apns4j.tools.ApnsTools;
 
 public class PushNotification {
+	/*
+	 * The notification’s priority. Provide one of the following values:
+    	(1) 10    The push message is sent immediately.
+    	The push notification must trigger an alert, sound, or badge on the device. 
+    	It is an error to use this priority for a push that contains only the content-available key.
+    	
+    	(2)5    The push message is sent at a time that conserves power on the device receiving it.
+	 */
+	public static final int PRIORITY_SENT_IMMEDIATELY = 10;
+	public static final int PRIORITY_SENT_A_TIME = 5;
+	
 	private int id;
 	private int expire;
 	private String token;
 	private Payload payload;
+	private int priority = PRIORITY_SENT_IMMEDIATELY;
 	
 	public int getId() {
 		return id;
@@ -55,7 +70,14 @@ public class PushNotification {
 	 */
 	public byte[] generateData(byte[] payloads) {
 		byte[] tokens = ApnsTools.decodeHex(getToken());
-		return ApnsTools.generateData(getId(), getExpire(), tokens, payloads);
+		List<FrameItem> list = new LinkedList<FrameItem>();
+		list.add(new FrameItem(FrameItem.ITEM_ID_DEVICE_TOKEN, tokens));
+		list.add(new FrameItem(FrameItem.ITEM_ID_PAYLOAD, payloads));
+		list.add(new FrameItem(FrameItem.ITEM_ID_NOTIFICATION_IDENTIFIER, ApnsTools.intToBytes(getId(), 4)));
+		list.add(new FrameItem(FrameItem.ITEM_ID_EXPIRATION_DATE, ApnsTools.intToBytes(getExpire(), 4)));
+		list.add(new FrameItem(FrameItem.ITEM_ID_PRIORITY, ApnsTools.intToBytes(getPriority(), 1)));
+//		return ApnsTools.generateData(getId(), getExpire(), tokens, payloads);
+		return ApnsTools.generateData(list);
 	}
 	@Override
 	public String toString() {
@@ -64,5 +86,11 @@ public class PushNotification {
 		sb.append(" token="); sb.append(getToken());
 		sb.append(" payload="); sb.append(getPayload().toString());
 		return sb.toString();
+	}
+	public int getPriority() {
+		return priority;
+	}
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

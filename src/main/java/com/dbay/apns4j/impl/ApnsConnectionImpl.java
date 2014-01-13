@@ -50,8 +50,8 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	
 	private Log logger = LogFactory.getLog(ApnsConnectionImpl.class);
 	
-	// ten years
-	private int EXPIRE = 10 * 365 * 24 * 60 * 60;
+	// never expire
+	private int EXPIRE = Integer.MAX_VALUE;
 	
 	private SocketFactory factory;
 	/**
@@ -146,7 +146,6 @@ public class ApnsConnectionImpl implements IApnsConnection {
 				closeSocket(socket);
 				socket = null;
 			}
-		
 			byte[] data = notification.generateData(plBytes);
 			boolean isSuccessful = false;
 			int retries = 0;

@@ -24,7 +24,8 @@ import org.json.simple.JSONObject;
 
 /**
  * @author RamosLi
- *
+ * For more details, view the following site:
+ *   https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
  */
 public class Payload {
 	private static final String APS = "aps";
@@ -32,6 +33,7 @@ public class Payload {
 	private String alert;
 	private Integer badge;
 	private String sound = "";
+	private Integer contentAvailable;
 	
 	private String alertBody;
 	private String alertActionLocKey;
@@ -104,6 +106,10 @@ public class Payload {
 		}
 		putIntoJson("sound", getSound(), apsObj);
 		
+		if (getContentAvailable() != null) {
+			apsObj.put("content-available", getContentAvailable().intValue());
+		}
+		
 		object.put(APS, apsObj);
 		if (getParams() != null) {
 			for (Entry<String, Object> e : getParams().entrySet()) {
@@ -156,5 +162,11 @@ public class Payload {
 	}
 	public void setAlertLocArgs(String[] alertLocArgs) {
 		this.alertLocArgs = alertLocArgs;
+	}
+	public Integer getContentAvailable() {
+		return contentAvailable;
+	}
+	public void setContentAvailable(Integer contentAvailable) {
+		this.contentAvailable = contentAvailable;
 	}
 }

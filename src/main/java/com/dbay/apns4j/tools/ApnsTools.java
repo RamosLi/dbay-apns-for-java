@@ -20,6 +20,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.List;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManagerFactory;
@@ -27,13 +28,37 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.dbay.apns4j.model.Command;
+import com.dbay.apns4j.model.FrameItem;
 
 /**
  * @author RamosLi
  *
  */
 public class ApnsTools {
+	public static byte[] generateData(List<FrameItem> list) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream os = new DataOutputStream(bos);
+		int frameLength = 0;
+		for (FrameItem item : list) {
+			// itemId length = 1, itemDataLength = 2
+			frameLength += 1 + 2 + item.getItemLength();
+		}
+		try {
+			os.writeByte(Command.SEND_V2);
+			os.writeInt(frameLength);
+			for (FrameItem item : list) {
+				os.writeByte(item.getItemId());
+				os.writeShort(item.getItemLength());
+				os.write(item.getItemData());
+			}
+			return bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		throw new RuntimeException();
+	}
 	
+	@Deprecated
 	public static byte[] generateData(int id, int expire, byte[] token, byte[] payload) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream os = new DataOutputStream(bos);
@@ -109,5 +134,13 @@ public class ApnsTools {
 			e.printStackTrace();
 		}
 		throw new RuntimeException("Can't create socketFactory.");
+	}
+	// All data is specified in network order, that is big endian.
+	public static byte[] intToBytes(int num, int resultBytesCount) {
+		byte[] ret = new byte[resultBytesCount];
+		for (int i = 0; i < resultBytesCount; i++) {
+			ret[i] = (byte)((num >> ((resultBytesCount - 1 - i) * 8)) & 0xFF);
+		}
+		return ret;
 	}
 }
