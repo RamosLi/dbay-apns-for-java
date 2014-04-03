@@ -251,13 +251,13 @@ public class ApnsConnectionImpl implements IApnsConnection {
 					}
 					InputStream socketIs = curSocket.getInputStream();
 					byte[] res = new byte[ERROR_RESPONSE_BYTES_LENGTH];
-					int size = -1;
+					int size = 0;
 					
 					while (true) {
 						try {
 							size = socketIs.read(res);
-							if (size > 0) {
-								// break, only when something was read
+							if (size > 0 || size == -1) {
+								// break, when something was read or there is no data any more
 								break;
 							}
 						} catch (SocketTimeoutException e) {
