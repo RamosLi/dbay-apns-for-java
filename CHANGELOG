@@ -1,3 +1,6 @@
+Version 1.0-SNAPSHOT
+ * 由于不断地改进，版本改成1.0-SNAPSHOT吧
+
 Version 1.4
  * Upgrade to support the new version of APNS(command=2);
  * fix bug of expiration date
