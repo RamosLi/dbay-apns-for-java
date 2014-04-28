@@ -17,6 +17,7 @@ package com.dbay.apns4j.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.dbay.apns4j.tools.ApnsTools;
 
@@ -31,6 +32,8 @@ public class PushNotification {
 	 */
 	public static final int PRIORITY_SENT_IMMEDIATELY = 10;
 	public static final int PRIORITY_SENT_A_TIME = 5;
+	
+	private static final Pattern pattern = Pattern.compile("[ -]");
 	
 	private int id;
 	private int expire;
@@ -54,7 +57,7 @@ public class PushNotification {
 		return token;
 	}
 	public void setToken(String token) {
-		this.token = token;
+		this.token = pattern.matcher(token).replaceAll("");
 	}
 	public Payload getPayload() {
 		return payload;

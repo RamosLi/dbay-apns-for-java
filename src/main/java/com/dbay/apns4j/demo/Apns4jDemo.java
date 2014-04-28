@@ -23,7 +23,9 @@ public class Apns4jDemo {
 			config.setKeyStore(is);
 			config.setDevEnv(false);
 			config.setPassword("123123");
-			config.setPoolSize(5);
+			config.setPoolSize(3);
+			// 假如需要在同个java进程里给不同APP发送通知，那就需要设置为不同的name
+//			config.setName("welove1");
 			apnsService = ApnsServiceImpl.createInstance(config);
 		}
 		return apnsService;
@@ -61,15 +63,14 @@ public class Apns4jDemo {
 			}
 		}
 		
-		try {
-			// sleep 5s.
-			Thread.sleep(5000);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(5000);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 		// It's a good habit to shutdown what you never use
-		service.shutdown();
+//		service.shutdown();
 		
 //		System.exit(0);
 	}

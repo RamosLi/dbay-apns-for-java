@@ -117,9 +117,9 @@ public class ApnsConfig {
 		}
 		return name;
 	}
-//	public void setName(String name) {
-//		this.name = name;
-//	}
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public int getIntervalTime() {
 		return intervalTime;

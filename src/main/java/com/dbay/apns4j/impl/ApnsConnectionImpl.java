@@ -310,7 +310,8 @@ public class ApnsConnectionImpl implements IApnsConnection {
 						logger.error(connName + " Unexpected command or size. commend: " + command + " , size: " + size);
 					}
 				} catch (Exception e) {
-					logger.error(connName + " " + e.getMessage(), e);
+//					logger.error(connName + " " + e.getMessage(), e);
+					logger.error(connName + " " + e.getMessage());
 				} finally {
 					/**
 					 * EN: close the old socket although it may be closed once before.
