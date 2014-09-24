@@ -1,3 +1,7 @@
+2014-09-24
+ * the default value of com.dbay.apns4j.model.Playload.sound was changed
+ * Playload.sound = "" ===>  Playload.sound = "default.caf"  ^_^
+
 Version 1.0-SNAPSHOT
  * 由于不断地改进，版本改成1.0-SNAPSHOT吧
 

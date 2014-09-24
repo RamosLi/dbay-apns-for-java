@@ -61,3 +61,8 @@ Contact
 ==================
 If you are using dbay-apns4j, let me know and keep in touch, thx.
 You can send an email to me: lzhc2004@163.com
+
+Tips
+==================
+2014-09-22：ios8更新后，如果没有设置声音(Payload.setSound())，那么手机收到推送很可能不响。
+此时需要更新dbay-apns4j包，或者自己设置下声音。eg: Payload.setSound("xx")。注意不能设为空串，否则不响，设为任意串均可。

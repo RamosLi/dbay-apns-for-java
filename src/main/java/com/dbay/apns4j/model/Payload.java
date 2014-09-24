@@ -32,7 +32,7 @@ public class Payload {
 	private Map<String, Object> params;
 	private String alert;
 	private Integer badge;
-	private String sound = "";
+	private String sound = "default.caf";
 	private Integer contentAvailable;
 	
 	private String alertBody;
