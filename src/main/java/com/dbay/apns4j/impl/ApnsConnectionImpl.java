@@ -182,12 +182,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 				
 				notificationCachedQueue.add(notification);
 				lastSuccessfulTime = System.currentTimeMillis();
-				
-				/** TODO there is a bug, maybe, theoretically.
-				 *  CN: 假如我们发了一条错误的通知，然后又发了 maxCacheLength 条正确的通知。这时APNS服务器
-				 *      才返回第一条通知的error-response。此时，第一条通知已经从队列移除了。。
-				 *      其实后面100条该重发，但却没有。不过这个问题的概率很低，我们还是信任APNS服务器能及时返回
-				 */			
+
 				if (notificationCachedQueue.size() > maxCacheLength) {
 					notificationCachedQueue.poll();
 				}
@@ -298,6 +293,10 @@ public class ApnsConnectionImpl implements IApnsConnection {
 								}
 							}
 							if (!found) {
+                                /* It means the error one already out of the queue, all notification should add in resent queue. */
+                                resentQueue.addAll(notificationCachedQueue);
+                                notificationCachedQueue.clear();
+                                /* Maybe there should auto increase maxCacheLength . */
 								logger.warn(connName + " Didn't find error-notification in the queue. Maybe it's time to adjust cache length. id: " + errorId);
 							}
 						}
