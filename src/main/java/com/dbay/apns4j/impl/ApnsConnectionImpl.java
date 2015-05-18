@@ -264,7 +264,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 					/** EN: error-response,close the socket and resent notifications
 					 *  CN: 一旦遇到错误返回就关闭连接，并且重新发送在它之后发送的通知
 					 */			
-					if (size == res.length && command == Command.ERROR) {
+					if (size == res.length && (command == Command.INVALID_TOKEN || command == Command.SHUTDOWN)) {
 						int status = res[1];
 						int errorId = ApnsTools.parse4ByteInt(res[2], res[3], res[4], res[5]);
 						
