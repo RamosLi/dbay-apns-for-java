@@ -15,6 +15,10 @@
  */
 package com.dbay.apns4j.impl;
 
+import static com.dbay.apns4j.model.ApnsConstants.CHARSET_ENCODING;
+import static com.dbay.apns4j.model.ApnsConstants.ERROR_RESPONSE_BYTES_LENGTH;
+import static com.dbay.apns4j.model.ApnsConstants.PAY_LOAD_MAX_LENGTH;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,8 +34,6 @@ import javax.net.SocketFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static com.dbay.apns4j.model.ApnsConstants.*;
 
 import com.dbay.apns4j.IApnsConnection;
 import com.dbay.apns4j.model.Command;
@@ -262,6 +264,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 							}
 						} catch (SocketTimeoutException e) {
 							// There is no data. Keep reading.
+						    Thread.sleep(10);
 						}
 					}
 					
