@@ -130,7 +130,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 		try {
 			plBytes = payload.getBytes(CHARSET_ENCODING);
 			if (plBytes.length > PAY_LOAD_MAX_LENGTH) {
-				logger.error("Payload execeed limit, the maximum size allowed is 256 bytes. " + payload);
+				logger.error("Payload execeed limit, the maximum size allowed is " + PAY_LOAD_MAX_LENGTH + " bytes. " + payload);
 				return;
 			}
 		} catch (UnsupportedEncodingException e) {
