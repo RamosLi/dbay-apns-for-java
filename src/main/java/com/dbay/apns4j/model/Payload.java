@@ -35,6 +35,7 @@ public class Payload {
 	private String sound = "default.caf";
 	private Integer contentAvailable;
 	
+        private String alertTitle;
 	private String alertBody;
 	private String alertActionLocKey;
 	private String alertLocKey;
@@ -86,6 +87,7 @@ public class Payload {
 		} else {
 			if (getAlertBody() != null || getAlertLocKey() != null) {
 				JSONObject alertObj = new JSONObject();
+				putIntoJson("title", getAlertTitle(), alertObj);
 				putIntoJson("body", getAlertBody(), alertObj);
 				putIntoJson("action-loc-key", getAlertActionLocKey(), alertObj);
 				putIntoJson("loc-key", getAlertLocKey(), alertObj);
@@ -132,6 +134,13 @@ public class Payload {
 		payload.addParam("para1", "1231dfasfwer");
 		payload.addParam("number", 12312312312L);
 		System.out.println(payload.toString());
+	}
+	
+        public String getAlertTitle() {
+		return alertTitle;
+	}
+	public void setAlertTitle(String alertTitle) {
+		this.alertTitle = alertTitle;
 	}
 	public String getAlertBody() {
 		return alertBody;
