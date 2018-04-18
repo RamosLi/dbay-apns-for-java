@@ -35,12 +35,13 @@ public class Payload {
 	private String sound = "default.caf";
 	private Integer contentAvailable;
 	
-        private String alertTitle;
+    private String alertTitle;
 	private String alertBody;
 	private String alertActionLocKey;
 	private String alertLocKey;
 	private String[] alertLocArgs;
 	private String alertLaunchImage;
+	private Boolean mutableContent = false;
 	
 	public Map<String, Object> getParams() {
 		return params;
@@ -111,6 +112,9 @@ public class Payload {
 		if (getContentAvailable() != null) {
 			apsObj.put("content-available", getContentAvailable().intValue());
 		}
+		if (getMutableContent()) {
+			apsObj.put("mutable-content", 1);
+		}
 		
 		object.put(APS, apsObj);
 		if (getParams() != null) {
@@ -135,8 +139,16 @@ public class Payload {
 		payload.addParam("number", 12312312312L);
 		System.out.println(payload.toString());
 	}
-	
-        public String getAlertTitle() {
+
+	public Boolean getMutableContent() {
+		return mutableContent;
+	}
+
+	public void setMutableContent(Boolean mutableContent) {
+		this.mutableContent = mutableContent;
+	}
+
+	public String getAlertTitle() {
 		return alertTitle;
 	}
 	public void setAlertTitle(String alertTitle) {
