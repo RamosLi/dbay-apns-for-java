@@ -34,12 +34,15 @@ public interface IApnsService {
 	 * @param payload
 	 */
 	public void sendNotification(String token, Payload payload);
+
+	public void sendNotification(String token, Payload payload, IApnsCallback callback);
+
 	/**
 	 * If you want to specify the ID of a notification, use this method
 	 * @param notification
 	 */
 	public void sendNotification(PushNotification notification);
-	
+
 	public void shutdown();
 	
 	/**
@@ -48,4 +51,5 @@ public interface IApnsService {
 	 * @return the device tokens which belong to the app that doesn't exist on the device.
 	 */
 	public List<Feedback> getFeedbacks();
+
 }

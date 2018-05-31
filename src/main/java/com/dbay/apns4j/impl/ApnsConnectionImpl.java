@@ -114,28 +114,28 @@ public class ApnsConnectionImpl implements IApnsConnection {
 	}
 	
 	@Override
-	public void sendNotification(String token, Payload payload) {
+	public Boolean sendNotification(String token, Payload payload) {
 		PushNotification notification = new PushNotification();
 		notification.setId(IDENTIFIER.incrementAndGet());
 		notification.setExpire(EXPIRE);
 		notification.setToken(token);
 		notification.setPayload(payload);
-		sendNotification(notification);
+		return sendNotification(notification);
 	}
 	
 	@Override
-	public void sendNotification(PushNotification notification) {
+	public Boolean sendNotification(PushNotification notification) {
 		byte[] plBytes = null;
 		String payload = notification.getPayload().toString();
 		try {
 			plBytes = payload.getBytes(CHARSET_ENCODING);
 			if (plBytes.length > PAY_LOAD_MAX_LENGTH) {
 				logger.error("Payload execeed limit, the maximum size allowed is " + PAY_LOAD_MAX_LENGTH + " bytes. " + payload);
-				return;
+				return false;
 			}
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage(), e);
-			return;
+			return false;
 		}
 		
 		/**
@@ -177,7 +177,7 @@ public class ApnsConnectionImpl implements IApnsConnection {
 			}
 			if (!isSuccessful) {
 				logger.error(String.format("%s Notification send failed. %s", connName, notification));
-				return;
+				return false;
 			} else {
 				logger.info(String.format("%s Send success. count: %s, notificaion: %s", connName, 
 						notificaionSentCount.incrementAndGet(), notification));
@@ -206,6 +206,8 @@ public class ApnsConnectionImpl implements IApnsConnection {
 			 */
 			startErrorWorker();
 		}
+
+		return true;
 	}
 	private Socket createNewSocket() throws IOException, UnknownHostException {
 		if (logger.isDebugEnabled()) {
