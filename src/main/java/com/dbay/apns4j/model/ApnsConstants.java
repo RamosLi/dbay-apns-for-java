@@ -40,7 +40,9 @@ public class ApnsConstants {
 	
 	public static final int ERROR_RESPONSE_BYTES_LENGTH = 6;
 	
-	public static final int PAY_LOAD_MAX_LENGTH = 256;
+	// Refer: http://stackoverflow.com/a/26994198/419348
+	// It is 2KB now.
+	public static final int PAY_LOAD_MAX_LENGTH = 2048;
 	
 	public static final String CHARSET_ENCODING = "UTF-8";
 }

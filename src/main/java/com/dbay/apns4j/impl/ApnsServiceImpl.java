@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.SocketFactory;
 
+import com.dbay.apns4j.IApnsCallback;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,7 +58,13 @@ public class ApnsServiceImpl implements IApnsService {
 		connPool = ApnsConnectionPool.newConnPool(config, factory);
 		feedbackConn = new ApnsFeedbackConnectionImpl(config, factory);
 	}
-	
+
+	private IApnsCallback callback = null;
+
+	public void setCallback(IApnsCallback callback) {
+		this.callback = callback;
+	}
+
 	@Override
 	public void sendNotification(final String token, final Payload payload) {
 		service.execute(new Runnable() {
@@ -77,6 +84,31 @@ public class ApnsServiceImpl implements IApnsService {
 			}
 		});
 	}
+
+	@Override
+	public void sendNotification(final String token, final Payload payload, final IApnsCallback callback) {
+		service.execute(new Runnable() {
+			@Override
+			public void run() {
+				IApnsConnection conn = null;
+				try {
+					conn = getConnection();
+					Boolean success = conn.sendNotification(token, payload);
+					if (success && callback != null) {
+						callback.success(payload);
+					}
+
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				} finally {
+					if (conn != null) {
+						connPool.returnConn(conn);
+					}
+				}
+			}
+		});
+	}
+
 	@Override
 	public void sendNotification(final PushNotification notification) {
 		service.execute(new Runnable() {

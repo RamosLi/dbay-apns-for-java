@@ -22,7 +22,7 @@ import com.dbay.apns4j.model.PushNotification;
 
 public interface IApnsConnection extends Closeable {
 	
-	public void sendNotification(String token, Payload payload);
+	public Boolean sendNotification(String token, Payload payload);
 
-	public void sendNotification(PushNotification notification);
+	public Boolean sendNotification(PushNotification notification);
 }
