@@ -13,7 +13,7 @@ Features
 * High performance and easy to use
 * Gets started quickly with demos
 * Supports connection pooling
-* ÖĞÓ¢Ë«Óï×¢ÊÍ£¬Ó¢ÓïĞ¡°×ÔÄ¶ÁÆğÀ´Ò²Ã»ÎÊÌâ
+* ä¸­è‹±åŒè¯­æ³¨é‡Šï¼Œè‹±è¯­å°ç™½é˜…è¯»èµ·æ¥ä¹Ÿæ²¡é—®é¢˜
 * Supports resend notifications after error
 * Creates new socket automatically when idle
 * Supports the Feedback Service
@@ -64,5 +64,5 @@ You can send an email to me: lzhc2004@163.com
 
 Tips
 ==================
-2014-09-22£ºios8¸üĞÂºó£¬Èç¹ûÃ»ÓĞÉèÖÃÉùÒô(Payload.setSound())£¬ÄÇÃ´ÊÖ»úÊÕµ½ÍÆËÍºÜ¿ÉÄÜ²»Ïì¡£
-´ËÊ±ĞèÒª¸üĞÂdbay-apns4j°ü£¬»òÕß×Ô¼ºÉèÖÃÏÂÉùÒô¡£eg: Payload.setSound("xx")¡£×¢Òâ²»ÄÜÉèÎª¿Õ´®£¬·ñÔò²»Ïì£¬ÉèÎªÈÎÒâ´®¾ù¿É¡£
+2014-09-22ï¼šios8æ›´æ–°åï¼Œå¦‚æœæ²¡æœ‰è®¾ç½®å£°éŸ³(Payload.setSound())ï¼Œé‚£ä¹ˆæ‰‹æœºæ”¶åˆ°æ¨é€å¾ˆå¯èƒ½ä¸å“ã€‚
+æ­¤æ—¶éœ€è¦æ›´æ–°dbay-apns4jåŒ…ï¼Œæˆ–è€…è‡ªå·±è®¾ç½®ä¸‹å£°éŸ³ã€‚eg: Payload.setSound("xx")ã€‚æ³¨æ„ä¸èƒ½è®¾ä¸ºç©ºä¸²ï¼Œå¦åˆ™ä¸å“ï¼Œè®¾ä¸ºä»»æ„ä¸²å‡å¯ã€‚
